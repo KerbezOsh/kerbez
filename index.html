@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кафе "Кербез"</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1c1c1c;
+      padding: 20px;
+      color: #fff;
+      margin: 0;
+    }
+    h1, h2 {
+      color: #ff3c3c;
+      text-align: center;
+    }
+    .menu-item {
+      background-color: #2b2b2b;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(255, 60, 60, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 6px 14px;
+      margin-top: 8px;
+      border: none;
+      background-color: #ff3c3c;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #cc2e2e;
+    }
+    #cart, #delivery-section {
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    #delivery-section {
+      background-color: #2b2b2b;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(255, 60, 60, 0.3);
+    }
+    input[type="text"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      width: 100%;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    #menu {
+      max-width: 600px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Кафе "Кербез"</h1>
+  <div id="menu"></div>
+
+  <h2>🛒 Корзина</h2>
+  <ul id="cart"></ul>
+  <p style="text-align:center;"><strong>Итого: <span id="total">0</span> сом</strong></p>
+
+  <div id="delivery-section">
+    <h2>🚚 Доставка</h2>
+    <p>Введите ваш адрес для доставки:</p>
+    <input type="text" id="address" placeholder="г. Ош, ул. Пример 123">
+    <button onclick="submitOrder()">Заказать</button>
+    <p id="order-confirmation" style="margin-top: 10px; color: #a3ffa3;"></p>
+  </div>
+
+  <script>
+    const menuItems = [
+      { name: "Сосиска в тесте", price: 50 },
+      { name: "Мороженое", price: 40 },
+      { name: "Кофе Латте", price: 60 },
+      { name: "Шоколад", price: 35 },
+      { name: "ПП Торт", price: 80 },
+      { name: "Обычный торт", price: 70 },
+      { name: "Маффин с клубникой", price: 45 },
+      { name: "Эклер с кремом", price: 55 },
+      { name: "Шоколадный капкейк", price: 50 },
+      { name: "Медовик", price: 65 },
+      { name: "Пирожное" , price: 30 },
+      { name: "Вафли с карамелью", price: 40 }
+    ];
+
+    const cart = [];
+    const menuDiv = document.getElementById("menu");
+    const cartList = document.getElementById("cart");
+    const totalSpan = document.getElementById("total");
+    const confirmation = document.getElementById("order-confirmation");
+
+    menuItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "menu-item";
+      div.innerHTML = `<span>${item.name} – ${item.price} сом</span><button>Купить</button>`;
+      div.querySelector("button").addEventListener("click", () => addToCart(item));
+      menuDiv.appendChild(div);
+    });
+
+    function addToCart(item) {
+      cart.push(item);
+      updateCart();
+    }
+
+    function updateCart() {
+      cartList.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} – ${item.price} сом`;
+        cartList.appendChild(li);
+        total += item.price;
+      });
+      totalSpan.textContent = total;
+    }
+
+    function submitOrder() {
+      const address = document.getElementById("address").value;
+      if (address.trim() === "") {
+        confirmation.style.color = "#ffb3b3";
+        confirmation.textContent = "Пожалуйста, введите адрес доставки.";
+        return;
+      }
+      if (cart.length === 0) {
+        confirmation.style.color = "#ffb3b3";
+        confirmation.textContent = "Ваша корзина пуста.";
+        return;
+      }
+      confirmation.style.color = "#a3ffa3";
+      confirmation.textContent = `Ваш заказ отправлен по адресу: ${address}. Спасибо за покупку!`;
+      cart.length = 0;
+      updateCart();
+    }
+  </script>
+
+</body>
+</html>
