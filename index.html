@@ -55,7 +55,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(255, 60, 60, 0.3);
     }
-    input[type="text"] {
+    input[type="text"], input[type="tel"] {
       padding: 10px;
       border-radius: 6px;
       border: none;
@@ -80,8 +80,9 @@
 
   <div id="delivery-section">
     <h2>🚚 Доставка</h2>
-    <p>Введите ваш адрес для доставки:</p>
+    <p>Введите ваш адрес и номер телефона для доставки:</p>
     <input type="text" id="address" placeholder="г. Ош, ул. Пример 123">
+    <input type="tel" id="phone" placeholder="Ваш номер телефона">
     <button onclick="submitOrder()">Заказать</button>
     <p id="order-confirmation" style="margin-top: 10px; color: #a3ffa3;"></p>
   </div>
@@ -98,7 +99,7 @@
       { name: "Эклер с кремом", price: 55 },
       { name: "Шоколадный капкейк", price: 50 },
       { name: "Медовик", price: 65 },
-      { name: "Пирожное" , price: 30 },
+      { name: "Пирожное \"Картошка\"", price: 30 },
       { name: "Вафли с карамелью", price: 40 }
     ];
 
@@ -135,9 +136,17 @@
 
     function submitOrder() {
       const address = document.getElementById("address").value;
-      if (address.trim() === "") {
+      const phone = document.getElementById("phone").value;
+      const phonePattern = /^\+996\d{9}$/;
+
+      if (address.trim() === "" || phone.trim() === "") {
         confirmation.style.color = "#ffb3b3";
-        confirmation.textContent = "Пожалуйста, введите адрес доставки.";
+        confirmation.textContent = "Пожалуйста, введите адрес и номер телефона.";
+        return;
+      }
+      if (!phonePattern.test(phone)) {
+        confirmation.style.color = "#ffb3b3";
+        confirmation.textContent = "Номер телефона должен начинаться с +996 и содержать 13 символов.";
         return;
       }
       if (cart.length === 0) {
@@ -145,8 +154,26 @@
         confirmation.textContent = "Ваша корзина пуста.";
         return;
       }
+
+      const message = `🛍 Новый заказ:\n\n📦 Товары:\n${cart.map(i => `• ${i.name} – ${i.price} сом`).join("\n")}\n\n💰 Итого: ${totalSpan.textContent} сом\n📍 Адрес: ${address}\n📞 Телефон: ${phone}`;
+
+      const chatId = "7815798366";
+      const token = "7608867848:AAG2MNXHu1L4cD7WTp22b3N-168-VIKAj1Q";
+      const url = `https://api.telegram.org/bot${token}/sendMessage`;
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message
+        })
+      });
+
       confirmation.style.color = "#a3ffa3";
-      confirmation.textContent = `Ваш заказ отправлен по адресу: ${address}. Спасибо за покупку!`;
+      confirmation.textContent = `Ваш заказ отправлен! Мы скоро свяжемся с вами.`;
       cart.length = 0;
       updateCart();
     }
